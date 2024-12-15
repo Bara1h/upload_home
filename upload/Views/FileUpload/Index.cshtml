@@ -1,0 +1,65 @@
+﻿@model FileUploadIndexViewModel
+
+@{
+    ViewData["Title"] = "File Upload";
+}
+
+<h1>File Upload</h1>
+
+<form asp-action="Upload" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Choose File</label>
+        <input type="file" id="file" name="file" class="form-control" />
+        @Html.ValidationMessageFor(model => model.FileUploadViewModel.File, "", new { @class = "text-danger" })
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="description">File Description</label>
+        <input type="text" id="description" name="description" class="form-control" required />
+        @Html.ValidationMessageFor(model => model.FileUploadViewModel.Description, "", new { @class = "text-danger" })
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success mt-3">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (ViewData.ModelState.ErrorCount > 0)
+{
+    <div class="alert alert-danger mt-3">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<h2>Uploaded Files</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Filename</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var file in Model.Files)
+        {
+            <tr>
+                <td>@file.OriginalFileName</td>
+                <td>@file.Description</td>
+                <td>
+                    <a href="@Url.Action("Download", "FileUpload", new { id = file.Id })" class="btn btn-info">Download</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
